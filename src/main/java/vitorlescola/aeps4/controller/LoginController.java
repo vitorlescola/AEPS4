@@ -10,13 +10,10 @@ public class LoginController{
             return "login";
         }
 
-        @GetMapping("/menu")
-        public String menu() {
-            return "menu";
-        }
-
     @GetMapping("/")
     public String vazio() {
         return "login";
     }
+
+
 }

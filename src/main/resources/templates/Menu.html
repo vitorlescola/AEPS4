@@ -19,20 +19,26 @@
 <body class="bg-light">
 
 <nav class="navbar navbar-dark bg-primary">
+
   <div class="container">
 
-    <a class="navbar-brand fw-bold" href="https://github.com/vitorlescola/AEPS4">
+    <a class="navbar-brand fw-bold"
+       th:href="@{/menu}">
       AEPS4
     </a>
 
-    <form th:action="@{/logout}" method="post">
-      <button class="btn btn-outline-light"
-              type="submit">
-        Sair
-      </button>
-    </form>
+    <div class="dropdown">
+
+      <a class="nav-link text-white fw-bold"
+         th:href="@{/configuracao}"
+         th:text="${conta.nomePessoa}">
+        Nome do usuário
+      </a>
+
+    </div>
 
   </div>
+
 </nav>
 
 <div class="container mt-5">
