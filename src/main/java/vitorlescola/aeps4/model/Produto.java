@@ -11,8 +11,8 @@ public class Produto{
     private String nomeProduto;
     @Column(nullable=false)
     private int estoque;
-    @Column(nullable = false)
-    //private Fornecedor fornecedor;
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Fornecedor fornecedor;
 
     public Long getId() {
         return id;

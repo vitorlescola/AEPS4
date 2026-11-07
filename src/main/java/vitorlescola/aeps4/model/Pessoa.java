@@ -7,11 +7,11 @@ public class Pessoa{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 14)
     private String cpf;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 120)
     private String nomePessoa;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true, length = 120)
     private String email;
     @Column(nullable = false)
     private String senha;

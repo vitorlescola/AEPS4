@@ -1,48 +1,74 @@
+
 package vitorlescola.aeps4.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import vitorlescola.aeps4.service.CustomUserDetailsService;
 
 @Configuration
-public class ConfiguracaoSeguranca{
+public class ConfiguracaoSeguranca {
+
     @Bean
-    public BCryptPasswordEncoder encoderSenha() {
+    public PasswordEncoder encoderSenha() {
         return new BCryptPasswordEncoder();
     }
 
-    @Configuration
-    @EnableWebSecurity
-    public class SecurityConfig {
+    @Bean
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            CustomUserDetailsService userDetailsService
+    ) throws Exception {
 
-        @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http)
-                throws Exception {
+        http
+                .userDetailsService(userDetailsService)
 
-            http
-                    .authorizeHttpRequests(auth -> auth
-                            .requestMatchers("/login", "/css/**", "/js/**", "/images/**")
-                            .permitAll()
-                            .anyRequest().authenticated()
-                    )
-                    .formLogin(form -> form
-                            .loginPage("/login")
-                            .loginProcessingUrl("/login")
-                            .defaultSuccessUrl("/home", true)
-                            .failureUrl("/login?error=true")
-                            .permitAll()
-                    )
-                    .logout(logout -> logout
-                            .logoutUrl("/logout")
-                            .logoutSuccessUrl("/login?logout=true")
-                            .permitAll()
-                    );
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/h2-console/**")
+                )
 
-            return http.build();
-        }
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.sameOrigin())
+                )
+
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/login",
+                                "/cadastro",
+                                "/css/**",
+                                "/js/**",
+                                "/h2-console/**",
+                                "/images/**"
+                        ).permitAll()
+
+                        .requestMatchers("/usuario/**")
+                        .hasRole("USUARIO")
+
+                        .requestMatchers("/fornecedor/**")
+                        .hasRole("FORNECEDOR")
+
+                        .anyRequest().authenticated()
+                )
+
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .usernameParameter("username")
+                        .passwordParameter("password")
+                        .defaultSuccessUrl("/menu", true)
+                        .failureUrl("/login?error=true")
+                        .permitAll()
+                )
+
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout=true")
+                        .permitAll()
+                );
+
+        return http.build();
     }
-    
 }
