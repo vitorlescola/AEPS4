@@ -149,4 +149,60 @@ public class ProdutoService{
             );
         }
     }
+
+    @Transactional(readOnly = true)
+    public List<Produto> listarTodosProdutos() {
+
+        return produtoRepository.listarTodosComFornecedor();
+    }
+
+    // Realizar compra
+    @Transactional
+    public int comprarProduto(
+            Long id,
+            int quantidade) {
+
+        if (quantidade <= 0) {
+            throw new IllegalArgumentException(
+                    "A quantidade deve ser maior que zero!"
+            );
+        }
+
+        int linhasAtualizadas =
+                produtoRepository.diminuirEstoque(
+                        id,
+                        quantidade
+                );
+
+        if (linhasAtualizadas == 0) {
+
+            Produto produto = produtoRepository.findById(id)
+                    .orElseThrow(() ->
+                            new IllegalArgumentException(
+                                    "Produto não encontrado!"
+                            )
+                    );
+
+            if (produto.getEstoque() == 0) {
+                throw new IllegalArgumentException(
+                        "Este produto está sem estoque!"
+                );
+            }
+
+            throw new IllegalArgumentException(
+                    "Estoque insuficiente! Disponível: "
+                            + produto.getEstoque()
+            );
+        }
+
+        Produto produtoAtualizado = produtoRepository
+                .findById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Produto não encontrado!"
+                        )
+                );
+
+        return produtoAtualizado.getEstoque();
+    }
 }

@@ -4,6 +4,7 @@
       xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -13,9 +14,19 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet">
+
+    <!-- Token CSRF do Spring Security -->
+    <meta name="_csrf"
+          th:content="${_csrf.token}">
+
+    <meta name="_csrf_header"
+          th:content="${_csrf.headerName}">
+
 </head>
 
 <body class="bg-light">
+
+<!-- NAVBAR -->
 
 <nav class="navbar navbar-dark bg-primary">
 
@@ -35,11 +46,549 @@
 
 </nav>
 
-<div class="container mt-5">
 
-    <!-- Área de compras será desenvolvida posteriormente -->
+<!-- CONTEÚDO PRINCIPAL -->
+
+<div class="container mt-5 mb-5">
+
+    <div class="text-center mb-4">
+
+        <h2 class="fw-bold">
+            Produtos disponíveis
+        </h2>
+
+        <p class="text-muted">
+            Encontre os produtos que deseja comprar.
+        </p>
+
+    </div>
+
+
+    <!-- MENSAGENS -->
+
+    <div id="mensagemCompra"
+         class="alert d-none"
+         role="alert">
+    </div>
+
+
+    <!-- BARRA DE PESQUISA -->
+
+    <div class="row justify-content-center mb-5">
+
+        <div class="col-md-8">
+
+            <div class="input-group">
+
+                <span class="input-group-text">
+                    🔍
+                </span>
+
+                <input type="text"
+                       id="pesquisaProduto"
+                       class="form-control"
+                       placeholder="Pesquisar produto pelo nome...">
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- LISTAGEM DE PRODUTOS -->
+
+    <div class="row g-4"
+         id="listaProdutos">
+
+        <div class="col-md-6 col-lg-4"
+             th:each="produto : ${produtos}"
+             th:attr="data-nome=${produto.nomeProduto.toLowerCase()}">
+
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h5 class="card-title fw-bold"
+                        th:text="${produto.nomeProduto}">
+                        Nome do produto
+                    </h5>
+
+                    <hr>
+
+                    <p class="mb-2">
+
+                        <strong>Fornecedor:</strong>
+
+                        <span th:text="${produto.fornecedor.nomePessoa}">
+                            Nome do fornecedor
+                        </span>
+
+                    </p>
+
+                    <p class="mb-3">
+
+                        <strong>Estoque:</strong>
+
+                        <span class="estoqueProduto"
+                              th:text="${produto.estoque}">
+                            0
+                        </span>
+
+                        unidades
+
+                    </p>
+
+
+                    <!-- PRODUTO DISPONÍVEL -->
+
+                    <div th:if="${produto.estoque > 0}">
+
+                        <span class="badge bg-success statusProduto">
+                            Disponível
+                        </span>
+
+                        <button type="button"
+                                class="btn btn-primary w-100 mt-3 botaoComprar"
+                                th:attr="data-id=${produto.id},
+                                         data-nome=${produto.nomeProduto},
+                                         data-estoque=${produto.estoque}">
+
+                            Comprar
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- PRODUTO SEM ESTOQUE -->
+
+                    <div th:if="${produto.estoque == 0}">
+
+                        <span class="badge bg-danger statusProduto">
+                            Sem estoque
+                        </span>
+
+                        <button type="button"
+                                class="btn btn-secondary w-100 mt-3"
+                                disabled>
+
+                            Sem estoque
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MENSAGEM DE PESQUISA VAZIA -->
+
+    <div id="nenhumProduto"
+         class="alert alert-warning text-center mt-4 d-none">
+
+        Nenhum produto encontrado.
+
+    </div>
+
+
+    <div class="text-center mt-5">
+
+        <a th:href="@{/menu}"
+           class="btn btn-outline-secondary">
+
+            Voltar ao início
+
+        </a>
+
+    </div>
 
 </div>
+
+
+<!-- MODAL DE COMPRA -->
+
+<div class="modal fade"
+     id="modalCompra"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title fw-bold">
+                    Comprar produto
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <p>
+                    Produto:
+                    <strong id="nomeProdutoModal"></strong>
+                </p>
+
+                <p>
+                    Estoque disponível:
+                    <strong id="estoqueModal"></strong>
+                </p>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Quantidade desejada
+                    </label>
+
+                    <input type="number"
+                           id="quantidadeCompra"
+                           class="form-control"
+                           min="1"
+                           value="1">
+
+                </div>
+
+                <div id="confirmacaoCompra"
+                     class="alert alert-warning d-none">
+
+                    Deseja realmente confirmar esta compra?
+
+                    <div class="mt-2">
+
+                        <strong id="resumoCompra"></strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+
+                    Cancelar
+
+                </button>
+
+                <button type="button"
+                        id="botaoConfirmar"
+                        class="btn btn-primary">
+
+                    Continuar
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- BOOTSTRAP -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+    let produtoSelecionado = null;
+
+    let quantidadeSelecionada = 0;
+
+    let estoqueSelecionado = 0;
+
+    const modalElemento = document.getElementById("modalCompra");
+
+    const modalCompra = new bootstrap.Modal(modalElemento);
+
+    const inputQuantidade = document.getElementById("quantidadeCompra");
+
+    const botaoConfirmar = document.getElementById("botaoConfirmar");
+
+    const confirmacaoCompra = document.getElementById("confirmacaoCompra");
+
+    const resumoCompra = document.getElementById("resumoCompra");
+
+
+    // Mensagem na página
+    function mostrarMensagem(mensagem, tipo) {
+
+        const elemento = document.getElementById("mensagemCompra");
+
+        elemento.className = "alert alert-" + tipo;
+
+        elemento.textContent = mensagem;
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+
+    // Abrir modal ao clicar em comprar
+    document.querySelectorAll(".botaoComprar").forEach(botao => {
+
+        botao.addEventListener("click", function() {
+
+            produtoSelecionado = this.dataset.id;
+
+            estoqueSelecionado = Number(this.dataset.estoque);
+
+            const nome = this.dataset.nome;
+
+            document.getElementById("nomeProdutoModal").textContent = nome;
+
+            document.getElementById("estoqueModal").textContent = estoqueSelecionado;
+
+            inputQuantidade.value = 1;
+
+            inputQuantidade.max = estoqueSelecionado;
+
+            confirmacaoCompra.classList.add("d-none");
+
+            botaoConfirmar.textContent = "Continuar";
+
+            modalCompra.show();
+
+        });
+
+    });
+
+    modalElemento.addEventListener("hidden.bs.modal", function() {
+
+        inputQuantidade.disabled = false;
+
+        confirmacaoCompra.classList.add("d-none");
+
+        botaoConfirmar.textContent = "Continuar";
+
+    });
+
+
+    // Confirmar quantidade
+    botaoConfirmar.addEventListener("click", function() {
+
+        const quantidade = Number(inputQuantidade.value);
+
+        if (!Number.isInteger(quantidade) ||
+            quantidade <= 0) {
+
+            mostrarMensagem(
+                "Informe uma quantidade válida!",
+                "danger"
+            );
+
+            return;
+        }
+
+        if (quantidade > estoqueSelecionado) {
+
+            mostrarMensagem(
+                "Quantidade maior que o estoque disponível!",
+                "danger"
+            );
+
+            return;
+        }
+
+
+        // Primeira confirmação
+        if (confirmacaoCompra.classList.contains("d-none")) {
+            quantidadeSelecionada = quantidade;
+            inputQuantidade.disabled = true;
+
+            resumoCompra.textContent =
+                quantidadeSelecionada + " unidade(s) de " +
+                document.getElementById("nomeProdutoModal").textContent;
+
+            confirmacaoCompra.classList.remove("d-none");
+
+            botaoConfirmar.textContent = "Confirmar compra";
+
+            return;
+        }
+
+
+        // Segunda confirmação
+        realizarCompra();
+
+    });
+
+
+    // Enviar compra ao servidor
+    async function realizarCompra() {
+
+        botaoConfirmar.disabled = true;
+
+        botaoConfirmar.textContent = "Processando...";
+
+        const csrfToken =
+            document.querySelector('meta[name="_csrf"]').content;
+
+        const csrfHeader =
+            document.querySelector('meta[name="_csrf_header"]').content;
+
+        try {
+
+            const resposta = await fetch(
+                "/usuario/compras/" + produtoSelecionado,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        [csrfHeader]: csrfToken
+                    },
+
+                    body: JSON.stringify({
+                        quantidade: quantidadeSelecionada
+                    })
+                }
+            );
+
+            const dados = await resposta.json();
+
+            if (!resposta.ok) {
+
+                modalCompra.hide();
+
+                mostrarMensagem(
+                    dados.mensagem,
+                    "danger"
+                );
+
+                return;
+            }
+
+
+            // Atualizar estoque visualmente
+            const botao = document.querySelector(
+                '.botaoComprar[data-id="' + produtoSelecionado + '"]'
+            );
+
+            const card = botao.closest(".card");
+
+            const estoqueElemento =
+                card.querySelector(".estoqueProduto");
+
+            estoqueElemento.textContent = dados.estoque;
+
+            botao.dataset.estoque = dados.estoque;
+
+            modalCompra.hide();
+
+
+            // Se o estoque chegar a zero
+            if (dados.estoque === 0) {
+
+                const status = card.querySelector(".statusProduto");
+
+                status.textContent = "Sem estoque";
+
+                status.className = "badge bg-danger statusProduto";
+
+                botao.textContent = "Sem estoque";
+
+                botao.className = "btn btn-secondary w-100 mt-3";
+
+                botao.disabled = true;
+
+                botao.removeAttribute("data-id");
+
+            }
+
+
+            mostrarMensagem(
+                dados.mensagem +
+                " Estoque restante: " + dados.estoque,
+                "success"
+            );
+
+        } catch (erro) {
+
+            mostrarMensagem(
+                "Não foi possível realizar a compra. Tente novamente.",
+                "danger"
+            );
+
+        } finally {
+
+            botaoConfirmar.disabled = false;
+
+            botaoConfirmar.textContent = "Continuar";
+
+        }
+
+    }
+
+
+    // Pesquisa de produtos pelo nome
+    document.getElementById("pesquisaProduto")
+        .addEventListener("input", function() {
+
+            const pesquisa = this.value
+                .toLowerCase()
+                .trim();
+
+            const cards = document.querySelectorAll(
+                "#listaProdutos > div"
+            );
+
+            let encontrados = 0;
+
+            cards.forEach(card => {
+
+                const nome = card.dataset.nome;
+
+                const corresponde = nome.includes(pesquisa);
+
+                card.classList.toggle(
+                    "d-none",
+                    !corresponde
+                );
+
+                if (corresponde) {
+                    encontrados++;
+                }
+
+            });
+
+            document.getElementById("nenhumProduto")
+                .classList.toggle(
+                "d-none",
+                encontrados > 0
+            );
+
+        });
+
+</script>
 
 </body>
 </html>
