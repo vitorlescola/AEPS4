@@ -24,4 +24,9 @@ public class MenuController{
 
         return "menu";
     }
+
+    @GetMapping("/usuario/compras")
+    public String compras() {
+        return "Compras";
+    }
 }

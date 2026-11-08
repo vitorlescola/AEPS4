@@ -27,15 +27,11 @@
       AEPS4
     </a>
 
-    <div class="dropdown">
-
-      <a class="nav-link text-white fw-bold"
-         th:href="@{/configuracao}"
-         th:text="${conta.nomePessoa}">
-        Nome do usuário
-      </a>
-
-    </div>
+    <a class="nav-link text-white fw-bold"
+       th:href="@{/configuracao}"
+       th:text="${conta.nomePessoa}">
+      Nome do usuário
+    </a>
 
   </div>
 
@@ -43,35 +39,117 @@
 
 <div class="container mt-5">
 
-  <div class="card shadow p-4">
+  <div class="text-center mb-5">
 
-    <h2>Bem-vindo ao sistema!</h2>
+    <h2 class="fw-bold">
+      Bem-vindo ao AEPS4!
+    </h2>
 
     <p class="text-muted">
-      Você realizou o login com sucesso.
+      Selecione uma das opções abaixo.
     </p>
 
-    <div sec:authorize="hasRole('USUARIO')">
+  </div>
 
-      <h4 class="text-primary">
-        Área do Usuário
-      </h4>
+  <!-- OPÇÕES DO FORNECEDOR -->
 
-      <p>
-        Você está autenticado como usuário.
-      </p>
+  <div sec:authorize="hasRole('FORNECEDOR')">
+
+    <div class="row justify-content-center g-4">
+
+      <div class="col-md-5">
+
+        <div class="card shadow-sm h-100">
+
+          <div class="card-body text-center p-4">
+
+            <h4 class="fw-bold mb-3">
+              Cadastrar produto
+            </h4>
+
+            <p class="text-muted">
+              Cadastre novos produtos e informe
+              a quantidade disponível em estoque.
+            </p>
+
+            <a th:href="@{/fornecedor/produtos/cadastrar}"
+               class="btn btn-primary w-100">
+
+              Cadastrar produto
+
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="col-md-5">
+
+        <div class="card shadow-sm h-100">
+
+          <div class="card-body text-center p-4">
+
+            <h4 class="fw-bold mb-3">
+              Ver meus produtos
+            </h4>
+
+            <p class="text-muted">
+              Visualize, edite e exclua
+              seus produtos cadastrados.
+            </p>
+
+            <a th:href="@{/fornecedor/produtos}"
+               class="btn btn-success w-100">
+
+              Ver meus produtos
+
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
 
     </div>
 
-    <div sec:authorize="hasRole('FORNECEDOR')">
+  </div>
 
-      <h4 class="text-success">
-        Área do Fornecedor
-      </h4>
+  <!-- OPÇÕES DO USUÁRIO -->
 
-      <p>
-        Você está autenticado como fornecedor.
-      </p>
+  <div sec:authorize="hasRole('USUARIO')">
+
+    <div class="row justify-content-center">
+
+      <div class="col-md-6 col-lg-5">
+
+        <div class="card shadow-sm">
+
+          <div class="card-body text-center p-4">
+
+            <h4 class="fw-bold mb-3">
+              Ver produtos
+            </h4>
+
+            <p class="text-muted">
+              Confira os produtos disponíveis
+              em nosso sistema.
+            </p>
+
+            <a th:href="@{/usuario/compras}"
+               class="btn btn-primary w-100">
+
+              Ver produtos
+
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
 
     </div>
 

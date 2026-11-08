@@ -12,6 +12,7 @@ public class Produto{
     @Column(nullable=false)
     private int estoque;
     @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "fornecedor_id", nullable = false)
     private Fornecedor fornecedor;
 
     public Long getId() {
@@ -36,5 +37,13 @@ public class Produto{
 
     public void setEstoque(int estoque) {
         this.estoque = estoque;
+    }
+
+    public Fornecedor getFornecedor() {
+        return fornecedor;
+    }
+
+    public void setFornecedor(Fornecedor fornecedor) {
+        this.fornecedor = fornecedor;
     }
 }

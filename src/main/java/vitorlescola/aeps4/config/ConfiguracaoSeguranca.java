@@ -35,21 +35,24 @@ public class ConfiguracaoSeguranca {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers(
                                 "/login",
                                 "/cadastro",
                                 "/css/**",
                                 "/js/**",
-                                "/h2-console/**",
                                 "/images/**"
                         ).permitAll()
 
-                        .requestMatchers("/usuario/**")
-                        .hasRole("USUARIO")
-
+                        // Somente fornecedores
                         .requestMatchers("/fornecedor/**")
                         .hasRole("FORNECEDOR")
 
+                        // Somente usuários
+                        .requestMatchers("/usuario/**")
+                        .hasRole("USUARIO")
+
+                        // Demais páginas exigem autenticação
                         .anyRequest().authenticated()
                 )
 
