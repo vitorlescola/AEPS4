@@ -11,7 +11,7 @@ public class Produto{
     private String nomeProduto;
     @Column(nullable=false)
     private int estoque;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "fornecedor_id", nullable = false)
     private Fornecedor fornecedor;
 
