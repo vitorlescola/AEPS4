@@ -1,6 +1,6 @@
--de um git clone no repositório
--abra ele na IDE, como o intellij
+-de um git clone no repositório<br />
+-abra ele na IDE, como o intellij<br />
 -vai a classe Aeps4Application é rode ela
--abra o localhost criado no seu pc(geralmente o http://localhost:8080/), o host é mostrado no terminal após o código ser rodado.
--cria uma conta Usuário e uma Fornecedor
+-abra o localhost criado no seu pc(geralmente o http://localhost:8080/), o host é mostrado no terminal após o código ser rodado.<br />
+-cria uma conta Usuário e uma Fornecedor<br />
 -o banco de dados é acessível no http://localhost:8080/h2-console
