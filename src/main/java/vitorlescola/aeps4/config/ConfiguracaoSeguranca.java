@@ -41,7 +41,8 @@ public class ConfiguracaoSeguranca {
                                 "/cadastro",
                                 "/css/**",
                                 "/js/**",
-                                "/images/**"
+                                "/images/**",
+                                "/h2-console/**"
                         ).permitAll()
 
                         // Somente fornecedores
